@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Train Scheduler</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/3.7.1/firebase.js"></script>
+    <style type="text/css">
+
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <br>
+        <!-- Jumbotron Title -->
+        <div class="jumbotron" style="background-color: #f4023c; color: white;">
+            <h1 class="text-center">Come on, ride the train</h1>
+            <h3 class="text-center">Hey, ride it!</h3>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading" style="background-color: #2377b9; color: white;">
+                        <h2 class="panel-title">Current Train Schedule</h2>
+                    </div>
+                    <div class="panel-body">
+                        <!-- <div class="table-responsive"> -->
+                        <table class="table table-hover" id="employee-table">
+                            <thead>
+                                <tr>
+                                    <thead>
+                                        <tr>
+                                            <th>Train Name</th>
+                                            <th>Destination</th>
+                                            <th>Frequency (min)</th>
+                                            <th>Next Arrival</th>
+                                            <th>Minutes Away</th>
+                                        </tr>
+                                    </thead>
+                                    </tbody>
+                                    <tr>
+                                        <!-- <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td> -->
+                                    </tr>
+                                    </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- <div class="container"> -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading" style="background-color: #2377b9; color: white;">
+                        <h2 class="panel-title">Add Train</h2>
+                    </div>
+                    <div class="panel-body">
+                        <form>
+                            <div class="form-group">
+                                <label for="TrainName">Train Name</label>
+                                <input type="train name" class="form-control" id="name" placeholder="Train Name">
+                            </div>
+                            <div class="form-group">
+                                <label for="Destination">Destination</label>
+                                <input type="destination" class="form-control" id="destination" placeholder="Destination">
+                            </div>
+                            <div class="form-group">
+                                <label for="FirstTrainTime">First Train Time (HH:mm - military time)</label>
+                                <input type="first train time" class="form-control" id="time" placeholder="First Train Time">
+                            </div>
+                            <div class="form-group">
+                                <label for="Frequency">Frequency</label>
+                                <input type="frequency" class="form-control" id="frequency" placeholder="Minutes">
+                            </div>
+                            <button type="submit" id="button" style="background-color: #f4023c; color: white;" class="btn btn-default">Submit</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+    var config = {
+         apiKey: "AIzaSyA0uq50lDRMWcUni9uEEt1pxKB_GB92bj8",
+    authDomain: "train-scheduler-30970.firebaseapp.com",
+    databaseURL: "https://train-scheduler-30970.firebaseio.com",
+    projectId: "train-scheduler-30970",
+    storageBucket: "train-scheduler-30970.appspot.com",
+    messagingSenderId: "506453996413"
+  };
+    firebase.initializeApp(config);
+
+    var database = firebase.database();
+
+    var name = "";
+    var destination = "";
+    var frequency = 0;
+    var time = 0;
+    // var minutes = 0;
+
+    $("#button").on("click", function(event) {
+        event.preventDefault();
+
+        name = $("#name").val();
+        destination = $("#destination").val();
+        frequency = $("#frequency").val();
+        time = $("#time").val();
+        // minutes = $("#minutes").val();
+
+        database.ref().push({
+            name: name,
+            destination: destination,
+            frequency: frequency,
+            time: time,
+            // minutes: minutes,
+            dateAdded: firebase.database.ServerValue.TIMESTAMP
+        });
+
+    });
+
+    database.ref().on("child_added", function(childSnapshot) {
+            var sv = childSnapshot.val();
+
+
+            console.log(sv.name);
+            console.log(sv.destination);
+            console.log(sv.frequency);
+            console.log(sv.time);
+            // console.log(sv.minutes);
+            console.log(sv.joinDate);
+
+
+
+            $("#employee-table > tbody").append("<tr><td>" + sv.name + "</td><td>" + sv.destination + "</td><td>" +
+                sv.frequency + "</td><td>" + sv.time + "</td></tr>");
+
+
+
+        },
+        function(errorObject) {
+            console.log("Errors handled: " + errorObject.code);
+        });
+    </script>
+</body>
+
+</html>
