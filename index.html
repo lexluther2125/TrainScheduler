@@ -5,12 +5,16 @@
     <title>Train Scheduler</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script type="text/javascript" src="assets/javascript/app.js"></script>
     <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/3.7.1/firebase.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/4.1.2/firebase.js"></script>
+    <script src="https://cdn.jsdelivr.net/momentjs/2.12.0/moment.min.js"></script>
     <style type="text/css">
-
+    body {
+        background-image: url("http://weclipart.com/gimg/22F58D781FA323FB/trn42.gif");
+    }
     </style>
 </head>
 
@@ -18,19 +22,19 @@
     <div class="container">
         <br>
         <!-- Jumbotron Title -->
-        <div class="jumbotron" style="background-color: #f4023c; color: white;">
+        <div class="jumbotron" style="background-color: #f4023c; color: white; border: solid black 3px;">
             <h1 class="text-center">Come on, ride the train</h1>
             <h3 class="text-center">Hey, ride it!</h3>
         </div>
         <div class="row">
             <div class="col-md-12">
                 <div class="panel panel-default">
-                    <div class="panel-heading" style="background-color: #2377b9; color: white;">
+                    <div class="panel-heading" style="background-color: #f4023c; color: white; border: solid black 3px;">
                         <h2 class="panel-title">Current Train Schedule</h2>
                     </div>
-                    <div class="panel-body">
+                    <div class="panel-body" style="border: solid black 3px;">
                         <!-- <div class="table-responsive"> -->
-                        <table class="table table-hover" id="employee-table">
+                        <table class="table table-hover" id="train-table">
                             <thead>
                                 <tr>
                                     <thead>
@@ -44,11 +48,7 @@
                                     </thead>
                                     </tbody>
                                     <tr>
-                                        <!-- <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td> -->
+                                     
                                     </tr>
                                     </tbody>
                         </table>
@@ -60,28 +60,28 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="panel panel-default">
-                    <div class="panel-heading" style="background-color: #2377b9; color: white;">
+                    <div class="panel-heading" style="background-color: #f4023c; color: white; border: solid black 3px;">
                         <h2 class="panel-title">Add Train</h2>
                     </div>
-                    <div class="panel-body">
+                    <div class="panel-body" style="border: solid black 5px;">
                         <form>
                             <div class="form-group">
-                                <label for="TrainName">Train Name</label>
-                                <input type="train name" class="form-control" id="name" placeholder="Train Name">
+                                <label for="train-name">Train Name</label>
+                                <input type="text" class="form-control" id="train-name" placeholder="Train Name">
                             </div>
                             <div class="form-group">
-                                <label for="Destination">Destination</label>
-                                <input type="destination" class="form-control" id="destination" placeholder="Destination">
+                                <label for="train-destination">Destination</label>
+                                <input type="text" class="form-control" id="train-destination" placeholder="Destination">
                             </div>
                             <div class="form-group">
-                                <label for="FirstTrainTime">First Train Time (HH:mm - military time)</label>
-                                <input type="first train time" class="form-control" id="time" placeholder="First Train Time">
+                                <label for="first-train-time">First Train Time (HH:mm - military time)</label>
+                                <input type="text" class="form-control" id="first-train-time" placeholder="First Train Time">
                             </div>
                             <div class="form-group">
-                                <label for="Frequency">Frequency</label>
-                                <input type="frequency" class="form-control" id="frequency" placeholder="Minutes">
+                                <label for="train-frequency">Frequency</label>
+                                <input type="text" class="form-control" id="train-frequency" placeholder="Minutes">
                             </div>
-                            <button type="submit" id="button" style="background-color: #f4023c; color: white;" class="btn btn-default">Submit</button>
+                            <button type="submit" id="add-train-btn" style="background-color: #2377b9; color: white;" class="btn btn-default">Submit</button>
                         </form>
                     </div>
                 </div>
@@ -90,65 +90,107 @@
     </div>
     <script>
     var config = {
-         apiKey: "AIzaSyA0uq50lDRMWcUni9uEEt1pxKB_GB92bj8",
-    authDomain: "train-scheduler-30970.firebaseapp.com",
-    databaseURL: "https://train-scheduler-30970.firebaseio.com",
-    projectId: "train-scheduler-30970",
-    storageBucket: "train-scheduler-30970.appspot.com",
-    messagingSenderId: "506453996413"
-  };
+        apiKey: "AIzaSyAd3sCZbBTGn_ZSWiixPAXis2toV7tSDGU",
+        authDomain: "lexitrainhw.firebaseapp.com",
+        databaseURL: "https://lexitrainhw.firebaseio.com",
+        projectId: "lexitrainhw",
+        storageBucket: "lexitrainhw.appspot.com",
+        messagingSenderId: "711949321063"
+    };
     firebase.initializeApp(config);
 
     var database = firebase.database();
 
-    var name = "";
-    var destination = "";
-    var frequency = 0;
-    var time = 0;
-    // var minutes = 0;
 
-    $("#button").on("click", function(event) {
+
+
+    $("#add-train-btn").on("click", function(event) {
         event.preventDefault();
 
-        name = $("#name").val();
-        destination = $("#destination").val();
-        frequency = $("#frequency").val();
-        time = $("#time").val();
-        // minutes = $("#minutes").val();
+        // Grabs user input
+        var name = $("#train-name").val().trim();
+        var place = $("#train-destination").val().trim();
+        var startTime = $("#first-train-time").val().trim();
+        var frequency = $("#train-frequency").val().trim();
 
-        database.ref().push({
+        // Creates local "temporary" object for holding train data
+        var newTrain = {
             name: name,
-            destination: destination,
-            frequency: frequency,
-            time: time,
-            // minutes: minutes,
-            dateAdded: firebase.database.ServerValue.TIMESTAMP
-        });
+            destination: place,
+            firstTrainTime: startTime,
+            trainFrequency: frequency
+        };
 
+        // Uploads train data to the database
+        database.ref().push(newTrain);
+
+        // Logs everything to console
+        console.log(newTrain.name);
+        console.log(newTrain.destination);
+        console.log(newTrain.firstTrainTime);
+        console.log(newTrain.trainFrequency);
+
+        // Clears all of the text-boxes
+        $("#train-name").val("");
+        $("#train-destination").val("");
+        $("#first-train-time").val("");
+        $("#train-frequency").val("");
+
+        // // Prevents moving to new page
+        // return false;
     });
 
-    database.ref().on("child_added", function(childSnapshot) {
-            var sv = childSnapshot.val();
+    //Create Firebase event for adding train to the database and a row in the html when a user adds an entry
+    database.ref().on("child_added", function(childSnapshot, prevChildKey) {
 
+        console.log(childSnapshot.val());
+        // console.log(prevChildKey);
 
-            console.log(sv.name);
-            console.log(sv.destination);
-            console.log(sv.frequency);
-            console.log(sv.time);
-            // console.log(sv.minutes);
-            console.log(sv.joinDate);
-
-
-
-            $("#employee-table > tbody").append("<tr><td>" + sv.name + "</td><td>" + sv.destination + "</td><td>" +
-                sv.frequency + "</td><td>" + sv.time + "</td></tr>");
+        // Store everything into a variable.
+        var trainName = childSnapshot.val().name;
+        var destination = childSnapshot.val().destination;
+        var firstTrainTime = childSnapshot.val().firstTrainTime;
+        var trainFrequency = childSnapshot.val().trainFrequency;
 
 
 
-        },
-        function(errorObject) {
-            console.log("Errors handled: " + errorObject.code);
-        });
+        console.log(firstTrainTime);
+
+        var convertedDate = moment(firstTrainTime, "hh:mm a");
+        console.log("Converted Time: " + convertedDate + " Type of: " + typeof convertedDate);
+
+        // var newMinutes = moment().diff(moment.unix(firstTrainTime, "X"), "minutes");
+        var newMinutes = moment(convertedDate).minutes();
+        console.log("Minutes: " + newMinutes + " Type of: " + typeof newMinutes);
+
+        // First Time (pushed back 1 year to make sure it comes before current time)
+        var firstTimeConverted = moment(firstTrainTime, "hh:mm a").subtract(1, "years");
+        console.log("Updated Time: " + firstTimeConverted + " Type of: " + typeof firstTrainTime);
+
+
+
+        // Difference between the times
+        var diffTime = moment().diff(moment(firstTimeConverted), "m");
+        console.log("DIFFERENCE IN TIME: " + diffTime + " Type of Difference " + typeof diffTime);
+
+        // Time apart (remainder)
+        var tRemainder = diffTime % trainFrequency;
+        console.log(tRemainder);
+
+        // Minute Until Train 
+        var minutes = trainFrequency - tRemainder;
+        console.log("MINUTES TILL TRAIN: " + minutes);
+
+        // Next Train
+        // .format("LT")
+        var nextTrain = moment().add(minutes, "m").format("hh:mm a");
+        console.log("ARRIVAL TIME: " + moment().format("hh:mm a")); // removed nextTrain from here, didn't like it - invalid time given
+
+
+        // Add each train's data into the table
+        $("#train-table > tbody").append("<tr><td>" + trainName + "</td><td>" + destination + "</td><td>" + trainFrequency + "</td><td>" + nextTrain + "</td><td>" + minutes + "</td><td>");
+
+    });
     </script>
 </body>
 
