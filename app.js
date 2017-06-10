@@ -13,21 +13,6 @@ $( document ).ready(function() {
     var database = firebase.database();
 
 
-    // var name = "";
-    // var destination = "";
-    // var frequency = 0;
-    // var time = 0;
-    // // var minutes = 0;
-
-    //Variable to hold database info
-
-
-    //Variable to hold information from form
-    // var trainName = "";
-    // var destination = "";
-    // var firstTrainTime = "";
-    // var trainFrequency = "";
-
     $("#add-train-btn").on("click", function(event) {
         event.preventDefault();
 
